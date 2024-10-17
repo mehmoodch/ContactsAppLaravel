@@ -14,15 +14,17 @@ services:
       - APP_ENV=local
       - APP_DEBUG=true
       - APP_KEY=base64:Lf9OdSDknL8I6STHcD+c4I33Y9f72ofjxxOFac9WNIA=
-      - APP_URL=http://localhost:8000
+      - APP_URL=http://localhost:5000
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_DATABASE=laravel_db
-      - DB_USERNAME=db_user
-      - DB_PASSWORD=db_password
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel_user
+      - DB_PASSWORD=laravel_password
     depends_on:
       - db # Ensure the database container is started before the app
+    command: >
+      sh -c "php artisan migrate && php artisan serve --host=0.0.0.0 --port=8000"
 
   db:
     image: mysql:8.0 # MySQL image
