@@ -1,35 +1,34 @@
-# Use an official PHP runtime as a parent image
-FROM php:8.2-fpm
+# Use official PHP image as base
+FROM php:8.1-fpm
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
-    libjpeg-dev \
+    libjpeg62-turbo-dev \
     libfreetype6-dev \
     zip \
     unzip \
     git \
     curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    mariadb-client # MySQL client to enable app to interact with MySQL server
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql gd
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.0 /usr/bin/composer /usr/bin/composer
 
-# Copy existing application files
+# Copy application code
 COPY . .
 
 # Install application dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --optimize-autoloader --no-dev
 
-# Set file permissions
-RUN chown -R www-data:www-data /var/www/html
+# Expose the port your Laravel app will run on
+EXPOSE 5000
 
-# Expose port 9000 for PHP-FPM
-EXPOSE 9000
-
-# Start PHP-FPM server
-CMD ["php-fpm"]
+# Start Laravel server (Change port if needed)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

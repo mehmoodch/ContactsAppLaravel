@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    ports:
+      - "5000:8000" # Map the internal port 8000 to localhost:8000
+    volumes:
+      - .:/var/www
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:Lf9OdSDknL8I6STHcD+c4I33Y9f72ofjxxOFac9WNIA=
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=laravel_db
+      - DB_USERNAME=db_user
+      - DB_PASSWORD=db_password
+    depends_on:
+      - db # Ensure the database container is started before the app
+
+  db:
+    image: mysql:8.0 # MySQL image
+    container_name: mysql-database
+    ports:
+      - "3306:3306" # Expose MySQL port
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: laravel_password
+    volumes:
+      - db_data:/var/lib/mysql # Persist data
+
+volumes:
+  db_data:
