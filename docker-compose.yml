@@ -27,12 +27,13 @@ services:
       sh -c "php artisan migrate && php artisan serve --host=0.0.0.0 --port=8000"
 
   db:
-    image: mysql:8.0 # MySQL image
-    container_name: mysql-database
+    build:
+      context: ./db  # This should point to a directory containing the Dockerfile for the DB
+      dockerfile: Dockerfile
     ports:
-      - "3306:3306" # Expose MySQL port
+      - "3307:3306" # Expose MySQL port
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: Admin.123?
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel_user
       MYSQL_PASSWORD: laravel_password
